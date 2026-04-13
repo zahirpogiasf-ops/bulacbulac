@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulacation</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- AOS -->
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+
+    /* NAVBAR */
+    .navbar { transition:0.3s; background: transparent; }
+    .navbar.scrolled { background:#000642; box-shadow:0 5px 20px rgba(0,0,0,0.3); }
+
+    .navbar a { color:#FFD700 !important; }
+
+    /* HERO */
+    .carousel-item {
+  height: 100vh;
+  position: relative;
+}
+
+.carousel-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.6);
+}
+
+/* TEXT POSITION */
+.custom-caption {
+  bottom: 40%;
+}
+
+/* DEFAULT = OUTLINE TEXT */
+.carousel-title {
+  font-size: 4rem;
+  font-weight: 700;
+  color: transparent;
+  -webkit-text-stroke: 2px white;
+  transition: 0.5s ease;
+}
+
+/* ACTIVE (CENTER) = FULL WHITE */
+.carousel-item.active .carousel-title {
+  color: white;
+  -webkit-text-stroke: 0px;
+}
+
+/* SIDE ITEMS FADED */
+.carousel-item-next .carousel-title,
+.carousel-item-prev .carousel-title {
+  opacity: 0.4;
+}
+
+    /* SEARCH */
+    #search {
+      border-radius:30px;
+      padding:12px 20px;
+      box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    /* CARD */
+    .card {
+      border:none;
+      border-radius:20px;
+      overflow:hidden;
+      transition:0.4s;
+      cursor:pointer;
+    }
+
+    .card:hover {
+      transform:translateY(-12px) scale(1.02);
+      box-shadow:0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    .card img { height:200px; object-fit:cover; }
+
+    .card-body { text-align:center; }
+
+    /* MAP */
+    #map { height:420px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.2); }
+
+    /* FOOTER (UNCHANGED STYLE BUT CLEANER ALIGNMENT) */
+    .footer {
+      background:#000642;
+      color:white;
+      padding:40px 20px;
+    }
+
+    .footer a { color:white; text-decoration:none; }
+  
+
+    /* DROPDOWN ANIMATION */
+    .dropdown-menu {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      display: block;
+      visibility: hidden;
+    }
+
+    .dropdown-menu.show {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+    }
+
+    /* STAGGERED ITEMS */
+    .dropdown-menu .dropdown-item {
+      opacity: 0;
+      transform: translateX(-10px);
+      transition: all 0.3s ease;
+    }
+
+    .dropdown-menu.show .dropdown-item {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* DELAY EACH ITEM */
+    .dropdown-menu.show .dropdown-item:nth-child(1) { transition-delay: 0.05s; }
+    .dropdown-menu.show .dropdown-item:nth-child(2) { transition-delay: 0.1s; }
+    .dropdown-menu.show .dropdown-item:nth-child(3) { transition-delay: 0.15s; }
+    .dropdown-menu.show .dropdown-item:nth-child(4) { transition-delay: 0.2s; }
+    .dropdown-menu.show .dropdown-item:nth-child(5) { transition-delay: 0.25s; }
+    .dropdown-menu.show .dropdown-item:nth-child(6) { transition-delay: 0.3s; }
+
+    .dropdown-menu .dropdown-item:hover {
+      padding-left: 20px;
+      background: #f8f9fa;
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR (UNCHANGED OPTIONS) -->
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-warning">BULACATION</a>
+
+    <button class="navbar-toggler bg-light" data-bs-toggle="collapse" data-bs-target="#navMenu">☰</button>
+
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto">
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Culture & History</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="cultural.html">Cultural</a></li>
+            <li><a class="dropdown-item" href="heritage.html">Heritage</a></li>
+            <li><a class="dropdown-item" href="religious.html">Religious</a></li>
+            <li><a class="dropdown-item" href="historical.html">Historical</a></li>
+            <li><a class="dropdown-item" href="art.html">Art</a></li>
+            <li><a class="dropdown-item" href="industrial.html">Industrial</a></li>
+          </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Nature & Thrills</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="ecotourism.html">Ecotourism</a></li>
+            <li><a class="dropdown-item" href="adventure.html">Adventure</a></li>
+            <li><a class="dropdown-item" href="river.html">River</a>
+            </li>
+            <li><a class="dropdown-item" href="rural.html">Rural</a></li>
+            <li><a class="dropdown-item" href="agritourism.html">Agritourism</a></li>
+            <li><a class="dropdown-item" href="wellness.html">Wellness</a></li>
+          </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Explore</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="food.html">Food</a></li>
+            <li><a class="dropdown-item" href="festival.html">Festival</a></li>
+            <li><a class="dropdown-item" href="educational.html">Educational</a></li>
+            <li><a class="dropdown-item" href="leisure.html">Leisure</a></li>
+            <li><a class="dropdown-item" href="family.html">Family</a></li>
+            <li><a class="dropdown-item" href="event.html">Event</a></li>
+            <li><a class="dropdown-item" href="photography.html">Photography</a></li>
+            <li><a class="dropdown-item" href="shopping.html">Shopping</a></li>
+          </ul>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+
+    <div class="carousel-item active">
+      <div class="carousel-bg" style="background-image:url('images/malolos.jpg')"></div>
+      <div class="carousel-caption custom-caption">
+        <h1 class="carousel-title">Malolos</h1>
+      </div>
+    </div>
+
+    <div class="carousel-item">
+      <div class="carousel-bg" style="background-image:url('images/carabao.jpg')"></div>
+      <div class="carousel-caption custom-caption">
+        <h1 class="carousel-title">Carabao Festival</h1>
+      </div>
+    </div>
+
+    <div class="carousel-item">
+      <div class="carousel-bg" style="background-image:url('images/barasoain.jpg')"></div>
+      <div class="carousel-caption custom-caption">
+        <h1 class="carousel-title">Barasoain Church</h1>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- controls -->
+  <button class="carousel-control-prev" data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+
+  <button class="carousel-control-next" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
+
+<!-- SEARCH -->
+<section class="container py-5">
+  <input type="text" id="search" class="form-control" placeholder="Search destinations...">
+</section>
+
+<!-- CARDS -->
+<section class="container pb-5">
+  <div class="row g-4" id="cardContainer">
+
+    <div class="col-md-4 card-item" data-name="cultural">
+      <a href="cultural.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/carabao.jpg">
+          <div class="card-body"><h5>Cultural</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="kabayunan">
+      <a href="ecotourism.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/kabayunan.jpg">
+          <div class="card-body"><h5>Ecotourism</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="food">
+      <a href="food.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/food1.jpg">
+          <div class="card-body"><h5>Food</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="religious">
+      <a href="religious.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/diocesan.jpg">
+          <div class="card-body"><h5>Religious</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="adventure">
+      <a href="adventure.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/gola.jpg">
+          <div class="card-body"><h5>Adventure</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="festival">
+      <a href="festival.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/fest3.jpg">
+          <div class="card-body"><h5>Festival</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="heritage">
+      <a href="heritage.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/malolos.jpg">
+          <div class="card-body"><h5>Heritage</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="river">
+      <a href="river.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/river3.jpg">
+          <div class="card-body"><h5>River</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="educational">
+      <a href="educational.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/edu1.jpg">
+          <div class="card-body"><h5>Educational</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="historical">
+      <a href="historical.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/pilar.jpg">
+          <div class="card-body"><h5>Historical</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="rural">
+      <a href="rural.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/rural3.jpg">
+          <div class="card-body"><h5>Rural</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="leisure">
+      <a href="leisure.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/leis3.jpg">
+          <div class="card-body"><h5>Leisure</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="art">
+      <a href="art.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/pulilan.jpg">
+          <div class="card-body"><h5>Art</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="agritourism">
+      <a href="agritourism.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/agri3.jpg">
+          <div class="card-body"><h5>Agritourism</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="family">
+      <a href="family.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/fam1.jpg">
+          <div class="card-body"><h5>Family</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="industrial">
+      <a href="industrial.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/jewelry.jpg">
+          <div class="card-body"><h5>Industrial</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="wellness">
+      <a href="wellness.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/well3.jpg">
+          <div class="card-body"><h5>Wellness</h5></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 card-item" data-name="event">
+      <a href="event.html" class="text-decoration-none text-dark">
+        <div class="card" data-aos="fade-up">
+          <img src="images/event3.jpg">
+          <div class="card-body"><h5>Event</h5></div>
+        </div>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- MAP -->
+<section class="container py-5">
+  <h2 class="text-center mb-4">Explore Bulacan Map</h2>
+  <div id="map"></div>
+</section>
+
+<!-- FOOTER (KEPT SAME CONTENT) -->
+<footer class="footer">
+  <div class="container d-flex flex-wrap justify-content-between">
+
+    <div>
+      <h3>Bulacation</h3>
+      <p>Discover the beauty and culture of Bulacan, Philippines.</p>
+      <img src="images/ClientSurveyQR_website.jpg" width="400">
+    </div>
+
+    <div>
+      <h4>Links</h4>
+      <a href="index.html">Home</a><br>
+      <a href="#tourism">Tourism</a><br>
+      <a href="#nature">Nature</a><br>
+      <a href="#experience">Experience</a>
+    </div>
+
+    <div>
+      <h4>Contact</h4>
+      <p>Email: info@bulacation.com</p>
+      <p>Phone: +63 967 433 0948</p>
+    </div>
+
+  </div>
+
+  <div class="text-center mt-3">© 2026 Bulacation</div>
+</footer>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  AOS.init();
+
+
+  // DROPDOWN STAGGER ANIMATION
+  document.querySelectorAll('.dropdown').forEach(function(dropdown) {
+    dropdown.addEventListener('show.bs.dropdown', function() {
+      const items = this.querySelectorAll('.dropdown-item');
+      items.forEach((item, index) => {
+        item.style.transitionDelay = (index * 0.08) + 's';
+      });
+    });
+
+    dropdown.addEventListener('hide.bs.dropdown', function() {
+      const items = this.querySelectorAll('.dropdown-item');
+      items.forEach(item => {
+        item.style.transitionDelay = '0s';
+      });
+    });
+  });
+
+  const carousel = document.querySelector('#heroCarousel');
+
+  carousel.addEventListener('slide.bs.carousel', function () {
+    document.querySelectorAll('.carousel-title').forEach(title => {
+      title.style.opacity = "0.3";
+    });
+  });
+
+  carousel.addEventListener('slid.bs.carousel', function () {
+    document.querySelectorAll('.carousel-title').forEach(title => {
+      title.style.opacity = "0.4";
+    });
+
+    document.querySelector('.carousel-item.active .carousel-title').style.opacity = "1";
+  });
+
+
+  // NAVBAR SCROLL EFFECT
+  window.addEventListener('scroll', ()=>{
+    document.querySelector('.navbar').classList.toggle('scrolled', window.scrollY>50);
+  });
+
+  // SEARCH FILTER
+  document.getElementById('search').addEventListener('keyup', function(){
+    let value = this.value.toLowerCase();
+    document.querySelectorAll('.card-item').forEach(card=>{
+      card.style.display = card.dataset.name.includes(value) ? 'block':'none';
+    });
+  });
+
+  // MAP
+  var map = L.map('map').setView([14.85,120.82], 10);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  L.marker([14.8436,120.8119]).addTo(map).bindPopup('Malolos, Bulacan');
+</script>
+
+
+
+</body>
+</html>
